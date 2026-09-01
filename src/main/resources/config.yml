@@ -1,0 +1,231 @@
+# MaxAC by maxson10
+# Лицензия GPL 3.0
+# Спасибо за использование античита!
+
+# Полные логи
+debug: false
+
+# Директория для сохранение датасетов
+outputDirectory: "data"
+
+# Настройки обнаружение
+detection:
+  # Включить или выключить ИИ модель
+  enabled: true
+
+  # Тип сервера: "signalr" или "huggingface"
+  server-type: "huggingface"
+
+  # Для Signalr: полный URL-адрес сервера
+  # Для huggingface: https://юзер-спейс.hf.space
+  endpoint: "https://юзер-спейс.hf.space/predict"
+
+  # API key: обязательно для signalr и huggingface если используете приватный репозиторий
+  api-key: ""
+
+  # Количество тиков для сбора данных в одной выборке
+  sample-size: 40
+
+  # Интервал между выборке (в тиках)
+  sample-interval: 10
+
+  # Интеграция с WorldGuard для игнорирования проверок в определенных регионах.
+  # Система приоритетов: если игрок находится в нескольких регионах одновременно,
+  # регион с наивысшим приоритетом (priority) определяет, будет ли отключена проверка.
+  #
+  # Пример:
+  # Игрок находится в "spawn" (приоритет 0) и в "pvp" (приоритет 10).
+  # Если в "spawn" проверка отключена, а в "pvp" разрешена — проверка БУДЕТ запущена,
+  # так как приоритет региона "pvp" выше.
+  worldguard:
+    # Включить интграцию с WorldGuard?
+    enabled: true
+    # Массив регионов где AI проверки выключены.
+    # Формат: "world:region" или просто "region"
+    disabled-regions:
+      - "spawn:spawn"
+
+# Система оповещений
+alerts:
+  # Вероятность порога для отправки оповещение
+  threshold: 0.9
+
+  # Отправлять оповещение в консоль?
+  console: false
+
+  # Префикс для алертов
+  prefix: "&#FF8C00[ALERT] &f"
+
+# Система VL
+violation:
+  # Порог VL (Violation Level) для срабатывания наказания (1 = мгновенное наказание при первом обнаружении)
+  threshold: 40
+
+  # Значение VL после применения наказания (0 = полный сброс)
+  reset-value: 20
+
+  # Множитель увеличения буфера: (вероятность - порог) * множитель
+  # Пример: вероятность 1.0 при пороге 0.70 = (1.0 - 0.70) * 33.33 = 10 к буферу
+  multiplier: 100.0
+
+  # Снижение буфера, когда вероятность < 0.1 (порог низкой вероятности)
+  decay: 0.35
+
+  # Настройки снижения (очистки) VL (сбрасывает VL, когда игрок не в бою)
+  # Защищает честных игроков от случайных ложных срабатываний
+  vl-decay:
+    # Включить автоматическое снижение уровня нарушений (VL)
+    enabled: true
+    # Интервал проверки в секундах (как часто проверять и снижать VL)
+    interval: 200
+    # Количество VL, которое снимается за один интервал
+    amount: 1
+
+# Настройки наказаний:
+# Доступные префиксы действий:
+#   {BAN}          - Выполнить команду бана
+#   {KICK}         - Выполнить команду кика
+#   {CUSTOM_ALERT} - Отправить кастомное уведомление модераторам
+#   (без префикса) - Выполнить «сырую» консольную команду
+#
+# Доступные плейсхолдеры:
+#   {PLAYER}      - Имя игрока
+#   {VL}          - Уровень нарушения (Violation level)
+#   {PROBABILITY} - Вероятность обнаружения
+#   {BUFFER}      - Значение буфера
+#
+# Также поддерживаются устаревшие плейсхолдеры: <player>, <vl>, <probability>, <buffer>
+
+penalties:
+  # Минимальная вероятность, необходимая для применения наказания (снижена для агрессивности)
+  min-probability: 0.50
+
+  # Префикс для кастомных уведомлений
+  custom-alert-prefix: "&#FF8C00[MAC] &f"
+
+  # Настройки анимации бана
+  animation:
+    enabled: true
+    # Длительность в тиках (20 тиков = 1 секунда) — уменьшено для быстрого бана
+    duration: 80
+
+  # Действия в зависимости от уровня нарушений (VL)
+  # Агрессивная система: уведомление -> кик -> бан
+  actions:
+    1: "{CUSTOM_ALERT} &fИгрок &#FF8C00{PLAYER} &fподозревается в &#FF8C00KillAura&f, с вероятностью &#FF8C00{PROBABILITY}&f, Буффер: &#FF8C00{BUFFER} &7[&#FF8C00VL: {VL}&7]"
+    #5: "{BAN} ban {PLAYER} Выебанны by MaxAC"
+
+# Настройки сообщений:
+# Цветовые коды:
+#   &0-&f - Стандартные цвета Minecraft
+#   &#RRGGBB - Hex-цвета (для версий 1.16+)
+#
+# Форматирование:
+#   &l - Жирный, &o - Курсив, &n - Подчеркнутый, &m - Зачеркнутый, &r - Сброс
+messages:
+  prefix: "&#FF8C00[MAC] &f"
+
+  alerts-enabled: "&fОповещение включены"
+  alerts-disabled: "&fОповещение выключены"
+  alert-format: "&fИгрок &#FF8C00{PLAYER} &fподозревается в &#FF8C00KillAura&f, с вероятностью &#FF8C00{PROBABILITY}&f, Буффер: &#FF8C00{BUFFER}"
+  alert-format-vl: "&fИгрок &#FF8C00{PLAYER} &fподозревается в &#FF8C00KillAura&f, с вероятностью &#FF8C00{PROBABILITY}&f, Буффер: &#FF8C00{BUFFER} &7[&#FF8C00VL: {VL}&7]"
+
+  unknown-command: "&fНеизвестные комманды: &#FF8C00{ARGS}"
+  players-only: "&fЭта комманда для игроков!"
+  no-permission: "&fУ вас нету прав!"
+  player-not-found: "&fИгрок &#FF8C00{PLAYER} &fне найден"
+  config-reloaded: "&fКонфигурация перезагружена!"
+
+  tracking-stopped: "&fТрекинг выключен"
+  tracking-started: "&fТрекинг включен для игрока &#FF8C00{PLAYER}"
+  prob-usage: "&fИспользование: &#FF8C00/mac prob <player>"
+  player-offline: "&fИгрок оффлайн"
+
+  actionbar-format: "Игрок &#FF8C00{PLAYER} &7| &fВероятность: &#FF8C00{PROBABILITY} &7| &fБуффер: &#FF8C00{BUFFER} &7| &fVL: &#FF8C00{VL}"
+
+  data-status-header: "&7=== Дата-Сеты Статус ==="
+  active-sessions: "&fАктивные сессии: &#FF8C00{COUNT}"
+  no-active-sessions: "&fНету активных сессий"
+  start-hint: "&fИспользуйте &#FF8C00/mac start <NICK|GLOBAL> <CHEAT|LEGIT|UNLABELED> &fдля начала"
+  session-started: "&fНачато &#FF8C00{LABEL} &fсессия для &#FF8C00{COUNT} игроков"
+  session-stopped: "&fОстановленная сессия для игрока &#FF8C00{PLAYER}"
+  all-sessions-stopped: "&fОстановленно &#FF8C00{COUNT} &fсессий"
+  no-sessions-to-stop: "&fНету активных сессий для остановки"
+  no-players-online: "&fНету игроков онлайн"
+  invalid-label: "&fНеправильная метка: &#FF8C00{LABEL}"
+  valid-labels: "&fВозможные метки: &#FF8C00CHEAT, LEGIT, UNLABELED"
+
+  usage-header: "&fИспользование:"
+  usage-start: "&7  /mac start <NICK|GLOBAL> <CHEAT|LEGIT|UNLABELED> \"<comment>\""
+  usage-stop: "&7  /mac stop <NICK|GLOBAL>"
+  usage-alerts: "&7  /mac alerts - Включить / Выключить оповещений"
+  usage-prob: "&7  /mac prob <игрок> - Смотреть за вероятостью (actionbar)"
+  usage-datastatus: "&7  /mac datastatus - Статус сборов датасетов"
+  usage-reload: "&7  /mac reload - Перезагрузить конфиг"
+  usage-list: "&7  /mac list - Список игроков по вероятности"
+  usage-leave: "&7  /mac leave - Выйти из режима наблюдателя"
+  usage-kicklist: "&7  /mac kicklist - Последние 10 киков от AI античита"
+
+  # Сообщения для наблюдателя
+  spectator-teleport: "&fЧтобы выйти из режима наблюдателя пропишите /mac leave"
+  spectator-leave: "&fВы вышли из режима наблюдателя"
+  spectator-no-permission: "&fУ вас нет прав для этого"
+  spectator-not-spectator: "&fВы не в режиме наблюдателя"
+  spectator-already: "&fВы уже находитесь в режиме наблюдателя"
+  spectator-self: "&fВы не можете следить за самим собой"
+
+  # Сообщения для /mac list
+  list-title: "&8Список игроков"
+  list-avg: "&fAVG: &{COLOR}{AVG}"
+  list-group: "&fГруппа {GROUP}: &{COLOR}{AVG}"
+
+  # Сообщения для /mac kicklist
+  kicklist-empty: "&7Нет киков от AI античита"
+  kicklist-header: "&#FF8C00Последние кики от AI античита:"
+  kicklist-separator: "&7─────────────────────────────────"
+  kicklist-format: "&e{INDEX}. &f{PLAYER} &7[&c{TIME}&7] &8- &bProb: &f{PROBABILITY} &8| &bBuf: &f{BUFFER} &8| &bVL: &#FF8C00{VL}"
+
+  # Сообщения для /mac datastatus
+  datastatus-players: "&7Игроки собирающие данные:"
+  datastatus-player-format: "&b  {PLAYER}&7 [&e{LABEL}&7]{COMMENT}"
+  datastatus-ticks-format: "&7    Тики: &a{TICKS}&7 | В бою: &a{IN_COMBAT}"
+
+  # Сообщения для голограммы (не используются, оставлены для совместимости)
+  hologram-avg: "&fAVG: &{COLOR}{AVG}"
+  hologram-check-item: "&fC{INDEX}: &{COLOR}{VALUE}"
+  hologram-text: "&fAVG: &7..."
+
+# Настройки Folia:
+# Эти настройки используются только при работе на сервере Folia.
+# На серверах Bukkit/Paper/Spigot эти параметры игнорируются.
+folia:
+  # Включить оптимизации специально для Folia
+  # Если отключено, плагин будет использовать стандартный планировщик Bukkit даже на Folia
+  enabled: true
+
+  # Размер пула потоков для асинхронных задач (0 = использовать значение Folia по умолчанию)
+  thread-pool-size: 0
+
+  # Настройки планировщика сущностей (Entity Scheduler)
+  # Использовать специфичные для сущностей планировщики для задач, связанных с игроками/мобами
+  entity-scheduler:
+    enabled: true
+
+  # Настройки регионального планировщика (Region Scheduler)
+  # Использовать планировщики конкретных регионов для задач, привязанных к местоположению
+  region-scheduler:
+    enabled: true
+
+# Настройки отображения проверок (используются в /mac list )
+checks:
+  # Пороги для цветов (вероятность)
+  green-threshold: 0.3      # до 0.3 – зелёный
+  yellow-threshold: 0.5     # 0.3–0.5 – жёлтый
+  orange-threshold: 0.8     # 0.5–0.8 – оранжевый
+  # свыше 0.8 – красный
+
+  # Цвета (HEX)
+  green-color: "#73FA00"
+  yellow-color: "#FADF00"
+  orange-color: "#FF7200"
+  red-color: "#FF0000"

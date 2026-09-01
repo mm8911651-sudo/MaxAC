@@ -1,0 +1,52 @@
+name: MaxAC
+version: '${version}'
+main: space.max.Main
+api-version: '1.13'
+description: "MaxAC - AI Anti-Cheat"
+folia-supported: true
+depend: [packetevents]
+softdepend: [PlaceholderAPI]
+
+commands:
+  mac:
+    description: MaxAC anticheat and data collection commands
+    usage: |
+      /mac start <NICK> <CHEAT|LEGIT|UNLABELED> "<comment>"
+      /mac stop <NICK>
+      /mac alerts - Toggle alerts
+      /mac prob <player> - Show player probability
+      /mac checks <player> - Show player checks history
+      /mac list - Show online players sorted by probability
+      /mac leave - Leave spectator mode
+      /mac reload - Reload config
+    permission: mac.admin
+    aliases: [maxac]
+
+permissions:
+  mac.admin:
+    description: Allows use of all MaxAC commands
+    default: op
+  mac.alerts:
+    description: Allows toggling AI alerts
+    default: op
+  mac.prob:
+    description: Allows viewing player probability
+    default: op
+  mac.reload:
+    description: Allows reloading config
+    default: op
+  mac.collect:
+    description: Allows starting/stopping data collection
+    default: op
+  mac.checks:
+    description: Allows viewing player checks history
+    default: op
+  mac.list:
+    description: Allows viewing players list sorted by probability
+    default: op
+  mac.spectator:
+    description: Allows entering spectator mode by right-clicking a player in /mac list
+    default: op
+  mac.leave:
+    description: Allows leaving spectator mode
+    default: op
